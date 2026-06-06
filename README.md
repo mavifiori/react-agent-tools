@@ -35,13 +35,13 @@ You: What's the weather like in São Paulo?
 Assistant: In São Paulo the temperature is 22°C, feels like 20°C, humidity 68%, wind 15 km/h.
 
 You: What is the UV index in Fortaleza right now?
-Assistant: The UV index in Fortaleza is 9 (Very High). Apply SPF 50+ sunscreen.
+Assistant: The UV index in Fortaleza is 9 — Very High (protection essential). Apply sunscreen and wear sunglasses.
 
 You: Who was Albert Einstein?
 Assistant: Albert Einstein was a German theoretical physicist, known for the theory of relativity...
 
 You: What is the air quality in Beijing?
-Assistant: The air quality index in Beijing is 156 (Unhealthy). Avoid outdoor activities.
+Assistant: The air quality in Beijing is Poor (index 4). Consider reducing outdoor activities.
 ```
 
 **Main flow:**
@@ -110,8 +110,8 @@ flowchart TD
     Env[".env\nGROQ_API_KEY\nOPENWEATHER_API_KEY\nGROQ_MODEL"]
 
     User -->|question| Main
-    Main -->|chat()| Agent
-    Agent <-->|LLM inference\nFunction Calling| Groq
+    Main -->|chat| Agent
+    Agent <-->|LLM inference / Function Calling| Groq
     Agent -->|invokes tool| Calc
     Agent -->|invokes tool| Weather
     Agent -->|invokes tool| UV
@@ -145,29 +145,29 @@ sequenceDiagram
     participant EXT as External API<br/>(OpenWeatherMap / Open-Meteo)
 
     U->>M: types question
-    M->>A: chat(input_msg)
+    M->>A: chat with input message
     A->>G: message + tool JSON schemas
     G-->>A: decision: tool_use or direct response
 
     alt Math question
-        A->>T: calculate.invoke("128 * 46")
-        T-->>A: "5888"
+        A->>T: calculate tool with expression
+        T-->>A: result e.g. 5888
     else Weather / UV / Air quality question
-        A->>T: get_weather.invoke("São Paulo")
-        T->>GEO: geocode_city("São Paulo")
-        GEO->>EXT: GET /geo/1.0/direct?q=São Paulo
-        EXT-->>GEO: [{"lat": -23.5, "lon": -46.6}]
-        GEO-->>T: (-23.5, -46.6)
-        T->>EXT: GET /data/2.5/weather?lat=...
-        EXT-->>T: {temp, humidity, wind, ...}
-        T-->>A: "22°C, humidity 68%..."
+        A->>T: weather tool with city name
+        T->>GEO: geocode city name
+        GEO->>EXT: GET /geo/1.0/direct?q=city
+        EXT-->>GEO: lat and lon coordinates
+        GEO-->>T: coordinates
+        T->>EXT: GET weather endpoint with coordinates
+        EXT-->>T: temp, humidity, wind data
+        T-->>A: formatted weather string
     else General knowledge question
-        G-->>A: direct response (no tool)
+        G-->>A: direct response, no tool used
     end
 
     A->>G: tool result + context
     G-->>A: final natural language response
-    A-->>M: messages[-1].content
+    A-->>M: last message content
     M-->>U: displays response
 ```
 
@@ -258,8 +258,8 @@ ai-assistant/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/ai-assistant.git
-cd ai-assistant
+git clone https://github.com/mavifiori/react-agent-tools.git
+cd react-agent-tools
 ```
 
 ### 2. Create and activate a virtual environment
@@ -637,6 +637,6 @@ The biggest learning was not technical: it was realising that in LLM-based syste
 
 Software Engineering · UFC | M.Sc. Computer Science · UNICAMP
 
-[![GitHub](https://img.shields.io/badge/GitHub-mavifiori-181717?logo=github)](https://github.com/mavifiori/Backlogs-data-ReBI0s-)
+[![GitHub](https://img.shields.io/badge/GitHub-mavifiori-181717?logo=github)](https://github.com/mavifiori/react-agent-tools)
 
 </div>
