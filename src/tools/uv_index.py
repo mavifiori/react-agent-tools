@@ -2,7 +2,7 @@ import requests
 from langchain_core.tools import tool
 
 from src.config import OPENWEATHER_API_KEY
-from tools._geocoding import geocode_city
+from src.tools._geocoding import geocode_city
 
 _UV_API_URL = "https://api.open-meteo.com/v1/forecast"
 

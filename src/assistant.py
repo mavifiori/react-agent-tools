@@ -8,6 +8,7 @@ from src.tools.weather import get_weather
 from src.tools.uv_index import get_uv_index
 from src.tools.air_quality import get_air_quality
 
+
 from src.config import GROQ_API_KEY, GROQ_MODEL
 
 
