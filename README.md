@@ -35,7 +35,7 @@ You: What's the weather like in São Paulo?
 Assistant: In São Paulo the temperature is 22°C, feels like 20°C, humidity 68%, wind 15 km/h.
 
 You: What is the UV index in Fortaleza right now?
-Assistant: The UV index in Fortaleza is 9 — Very High (protection essential). Apply sunscreen and wear sunglasses.
+Assistant: The UV index in Fortaleza is 9, Very High (protection essential). Apply sunscreen and wear sunglasses.
 
 You: Who was Albert Einstein?
 Assistant: Albert Einstein was a German theoretical physicist, known for the theory of relativity...
@@ -215,7 +215,7 @@ ai-assistant/
 | `weather.py` | Converts city name to coordinates and queries current weather from OpenWeatherMap |
 | `uv_index.py` | Queries UV index via Open-Meteo (the `/uvi` endpoint was discontinued on OWM's free plan) |
 | `air_quality.py` | Queries the Air Quality Index (AQI) via OpenWeatherMap Air Pollution API |
-| `_geocoding.py` | Converts city name to `(lat, lon)` — reused by weather, UV and air quality tools (DRY) |
+| `_geocoding.py` | Converts city name to `(lat, lon)`  reused by weather, UV and air quality tools (DRY) |
 | `conftest.py` | `sys.path.insert(0, ...)` so pytest locates `src/` without installing the package |
 | `test_calculator.py` | Tests `safe_eval` (operations, edge cases, blocked expressions) and `calculate.invoke` |
 | `test_weather.py` | Tests `geocode_city` with HTTP mocks: success, city not found, 401, Timeout |
