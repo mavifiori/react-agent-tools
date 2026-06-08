@@ -229,7 +229,7 @@ ai-assistant/
 | **Python** | 3.14 | Main language | Mature ecosystem for LLMs and data |
 | **LangChain** | ≥ 0.2.0 | ReAct agent orchestration | Handles state management, retry, and tool calling without reinventing the wheel |
 | **LangChain-Core** | ≥ 0.2.0 | `@tool` decorator, typing | Standard interface for registering tools as JSON schemas |
-| **LangChain-Groq** | ≥ 0.1.0 | Groq API integration | Official connector — 3-line setup |
+| **LangChain-Groq** | ≥ 0.1.0 | Groq API integration | Official connector, 3-line setup |
 | **Groq API** | — | LLM inference | Ultra-low latency via LPU; generous free tier for development |
 | **llama-3.3-70b-versatile** | — | Language model | Best Function Calling support among models tested; reliable reasoning |
 | **OpenWeatherMap API** | 2.5 | Weather + air quality | Well-documented REST API; free plan covers geocoding + weather + AQI |
@@ -378,7 +378,7 @@ pip list | grep -E "langchain|groq|requests|pytest"
 | Requirement | Implementation |
 |---|---|
 | Identify if a question is mathematical | Delegated to the model via Function Calling,no regex, no if/else |
-| Use a calculator for computations | `@tool calculate` with `safe_eval()` via AST — never raw `eval()` |
+| Use a calculator for computations | `@tool calculate` with `safe_eval()` via AST, never raw `eval()` |
 | Answer directly for non-math questions | The model chooses not to invoke any tool and responds from its own knowledge |
 | Additional superpowers | +3 tools: weather, UV index, and air quality, all via public APIs |
 
@@ -432,7 +432,7 @@ The `/uvi` endpoint on OpenWeatherMap was discontinued on the free plan. Rather 
 - It manages the Reason → Act → Observe cycle internally (via LangGraph)
 - It serialises tool JSON schemas automatically from docstrings and type hints
 - It handles retry and `tool_calls` parsing without boilerplate code
-- It is the most widely adopted framework in AI Engineering — familiarity is a valued skill
+- It is the most widely adopted framework in AI Engineering, familiarity is a valued skill
 
 ### AI integration strategy
 
@@ -443,7 +443,7 @@ The agent uses the **ReAct** pattern (Reason, Act, Observe):
 4. It observes the returned result
 5. It decides whether to act again or formulate the final response
 
-This pattern ensures that numerical answers are always computed — never hallucinated.
+This pattern ensures that numerical answers are always computed, never hallucinated.
 
 ### Error handling strategy
 
@@ -528,7 +528,7 @@ __pycache__/
 .pytest_cache/
 ```
 
-The `.gitignore` excludes `.env` from version control. The repository contains only `.env.example` with placeholder values — no real secrets.
+The `.gitignore` excludes `.env` from version control. The repository contains only `.env.example` with placeholder values, no real secrets.
 
 ### Input validation — calculator
 
