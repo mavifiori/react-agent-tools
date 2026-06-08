@@ -3,6 +3,7 @@ from langchain_core.tools import tool
 
 from src.config import OPENWEATHER_API_KEY
 from src.tools._geocoding import geocode_city
+from typing import Optional
 
 _UV_API_URL = "https://api.open-meteo.com/v1/forecast"
 
@@ -15,7 +16,7 @@ _UV_INDEX_LABELS = [
 ]
 
     
-def _classify_uv_index(uv_index: float) -> str:
+def _classify_uv_index(uv_index: Optional[float]) -> str:
     for low, high, label in _UV_INDEX_LABELS:
         if low <= uv_index <= high:
             return label
@@ -39,7 +40,7 @@ def get_uv_index(city: str) -> str:
             timeout=5,
         )
         uv_response.raise_for_status()
-        uv_value =float| uv_response.json().get("current", {}).get("uv_index")
+        uv_value = uv_response.json().get("current", {}).get("uv_index")
         if uv_value is None:
             return f"UV index data not available for {city}."
         return f"The current UV index in {city} is {uv_value:.1f} - {_classify_uv_index(uv_value)}."

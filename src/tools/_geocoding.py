@@ -1,9 +1,10 @@
 import requests
 from src.config import OPENWEATHER_API_KEY
+from typing import Union, Tuple
 
 _GEO_URL = "https://api.openweathermap.org/geo/1.0/direct"
 
-def geocode_city(city: str) -> tuple[float, float] | str:
+def geocode_city(city: str) -> Union[Tuple[float, float], str]:
     """Returns the latitude and longitude(lat,lon) of a city."""
     try:
         response = requests.get(
