@@ -176,7 +176,7 @@ sequenceDiagram
 ## 📁 Project Structure
 
 ```
-ai-assistant/
+react-agent-tools/
 │
 ├── main.py                     # Entry point — interactive CLI loop
 │
