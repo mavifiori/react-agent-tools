@@ -401,7 +401,7 @@ pip list | grep -E "langchain|groq|requests|pytest"
 ### Key architectural decisions
 
 **Function Calling vs. manual classification:**
-The naive approach would be to detect math questions with regex (`r"\d+\s*[\+\-\*\/]\s*\d+"`). The problem: phrases like *"what is half of 200?"* or *"how many days are in 3 weeks?"* escape any regex. With Function Calling, the model understands semantic intent — not syntactic form — and decides when to invoke the calculator. This scales to any number of tools without touching the routing logic.
+The naive approach would be to detect math questions with regex (`r"\d+\s*[\+\-\*\/]\s*\d+"`). The problem: phrases like *"what is half of 200?"* or *"how many days are in 3 weeks?"* escape any regex. With Function Calling, the model understands semantic intent — not syntactic form, and decides when to invoke the calculator. This scales to any number of tools without touching the routing logic.
 
 **`_geocoding.py` as a shared module:**
 Three tools needed to convert a city name to coordinates. Extracting `geocode_city()` into a separate module avoids code duplication (DRY principle) and allows geocoding to be tested in isolation, with HTTP mocks, without any internet dependency.
@@ -410,7 +410,7 @@ Three tools needed to convert a city name to coordinates. Extracting `geocode_ci
 `eval("__import__('os').system('rm -rf /')")` is a real attack vector. The implementation uses `ast.parse()` to build the expression's AST and walks the nodes, accepting only explicitly listed arithmetic operations (`Add`, `Sub`, `Mul`, `Div`, `Pow`, `Mod`, `UAdd`, `USub`). Any other node raises a `ValueError`. Principle of least privilege applied to the calculator.
 
 **Open-Meteo for UV index:**
-The `/uvi` endpoint on OpenWeatherMap was discontinued on the free plan. Rather than asking the user to pay, the solution found Open-Meteo — a public, free, key-less API — which exposes `current.uv_index`. The tool became more robust and cost-free.
+The `/uvi` endpoint on OpenWeatherMap was discontinued on the free plan. Rather than asking the user to pay, the solution found Open-Meteo — a public, free, key-less API, which exposes `current.uv_index`. The tool became more robust and cost-free.
 
 ### Trade-offs
 
@@ -463,7 +463,7 @@ if not data:
     return "Error: city not found."
 ```
 
-A tool **never raises an exception to the agent** — it always returns a string, even on failure. This prevents an external service outage from bringing down the entire execution chain.
+A tool **never raises an exception to the agent**  it always returns a string, even on failure. This prevents an external service outage from bringing down the entire execution chain.
 
 ---
 
@@ -480,17 +480,17 @@ A tool **never raises an exception to the agent** — it always returns a string
 
 ### Why this model was chosen
 
-During development, `llama3-8b-8192` was tested first (lower cost, higher speed). It failed consistently at Function Calling: it returned `tool_use_failed` with malformed arguments — the JSON schema was ignored. Migrating to `llama-3.3-70b-versatile` solved the problem completely. The lesson: **instruction following capability scales with model size**.
+During development, `llama3-8b-8192` was tested first (lower cost, higher speed). It failed consistently at Function Calling: it returned `tool_use_failed` with malformed arguments, the JSON schema was ignored. Migrating to `llama-3.3-70b-versatile` solved the problem completely. The lesson: **instruction following capability scales with model size**.
 
 Groq was preferred over OpenAI because:
 - Extremely low latency via LPU (Language Processing Unit) — noticeable in an interactive CLI
 - Free plan sufficient for development and testing
-- Llama is open-weight — no single-vendor lock-in
+- Llama is open-weight,no single-vendor lock-in
 
 ### Identified limitations
 
-- **Free plan rate limit:** ~30 req/min — sufficient for development, restrictive in production with multiple users
-- **Stateless by nature:** no memory between turns — follow-up questions ("what about that same city?") lose context
+- **Free plan rate limit:** ~30 req/min sufficient for development, restrictive in production with multiple users
+- **Stateless by nature:** no memory between turns, follow-up questions ("what about that same city?") lose context
 - **Non-determinism:** vague system prompts produce inconsistent behaviour — precise prompts are part of the code
 
 ### Viable alternatives
@@ -594,9 +594,9 @@ eval() only on whitelisted nodes  ← never eval() on the raw string
 
 **Model choice matters as much as architecture.** The same code, with the same tool structure, failed with `llama3-8b-8192` and worked correctly with `llama-3.3-70b-versatile`. The ability to follow instructions and respect JSON schemas is not uniform across models — it is a quality dimension that must be tested empirically, not assumed.
 
-**System prompts are code — not documentation.** Vague prompts produce unpredictable behaviour. The final system prompt includes explicit instructions like *"ALWAYS use the calculate tool for any arithmetic — never compute math yourself"* because without that instruction the model would occasionally answer simple calculations from memory. This directly echoes what I learned in requirements elicitation during undergrad research: clarity of intent eliminates ambiguity of implementation.
+**System prompts are code — not documentation.** Vague prompts produce unpredictable behaviour. The final system prompt includes explicit instructions like *"ALWAYS use the calculate tool for any arithmetic, never compute math yourself"* because without that instruction the model would occasionally answer simple calculations from memory. This directly echoes what I learned in requirements elicitation during undergrad research: clarity of intent eliminates ambiguity of implementation.
 
-**Shared modules emerge naturally from the code, not from upfront planning.** `_geocoding.py` was not in the initial design. When implementing the third tool that needed geographic coordinates, the duplication became obvious and the extraction was natural. DRY is not a memorised rule — it is a signal the code emits when it is ready to be refactored.
+**Shared modules emerge naturally from the code, not from upfront planning.** `_geocoding.py` was not in the initial design. When implementing the third tool that needed geographic coordinates, the duplication became obvious and the extraction was natural. DRY is not a memorised rule,it is a signal the code emits when it is ready to be refactored.
 
 **Free API constraints are part of the engineering context.** The `/uvi` endpoint on OpenWeatherMap was discontinued on the free plan — the documentation did not make this clear. Discovering it via a direct browser test (not via a code error) was the right approach: isolate the problem at the simplest possible layer before assuming it is a bug in the code.
 
@@ -623,11 +623,11 @@ eval() only on whitelisted nodes  ← never eval() on the raw string
 
 ## 🏁 Final Remarks
 
-This project goes beyond the requested MVP — an assistant with a calculator — without incurring unnecessary complexity. The decision to use native Function Calling instead of regex classification was not aesthetic: it is the approach that scales. With regex, every new intent requires a new rule. With Function Calling, every new tool is simply registered — the model learns to use it from the schema and the docstring.
+This project goes beyond the requested MVP, an assistant with a calculator,without incurring unnecessary complexity. The decision to use native Function Calling instead of regex classification was not aesthetic: it is the approach that scales. With regex, every new intent requires a new rule. With Function Calling, every new tool is simply registered — the model learns to use it from the schema and the docstring.
 
-The extraction of `_geocoding.py`, the HTTP mocks in the weather tests, and the AST-based `safe_eval()` are not implementation details — they are evidence of an engineering process: every decision has a traceable technical justification, not a personal preference.
+The extraction of `_geocoding.py`, the HTTP mocks in the weather tests, and the AST-based `safe_eval()` are not implementation details, they are evidence of an engineering process: every decision has a traceable technical justification, not a personal preference.
 
-The biggest learning was not technical: it was realising that in LLM-based systems, model behaviour in production is as much a part of the architecture as the database choice. Testing empirically, documenting what was found, and building safeguards — `safe_eval`, error strings, precise system prompts — is what separates a prototype from a reliable system.
+The biggest learning was not technical: it was realising that in LLM-based systems, model behaviour in production is as much a part of the architecture as the database choice. Testing empirically, documenting what was found, and building safeguards, `safe_eval`, error strings, precise system prompts — is what separates a prototype from a reliable system.
 
 ---
 
